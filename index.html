@@ -93,8 +93,7 @@
         /* DICAS PARA IMAGENS:
            1. Use links diretos da imagem (clique direito na imagem na web -> "Copiar endereço da imagem").
            2. O link deve estar entre aspas duplas: "link aqui"
-           3. Se usar sites como Unsplash, Pexels ou Pixabay, certifique-se de pegar o link direto.
-           4. Se a imagem não carregar, o sistema mostrará um aviso "Imagem Indisponível".
+           3. Se usar sites como Unsplash, certifique-se de que é o link da imagem (ex: termina em .jpg ou começa com images.unsplash.com) e não o link do site.
         */
 
         const CONFIGURACAO_SITE = {
@@ -165,8 +164,36 @@
         // ==================================================================================
 
 
-        // --- Fallback Image (Base64 SVG - Funciona sempre) ---
-        const FALLBACK_IMAGE = "data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3e%3crect fill='%23f3e8ff' width='600' height='600'/%3e%3ctext fill='%234c1d95' x='50%25' y='50%25' text-anchor='middle' font-family='sans-serif' font-size='24' dy='.3em'%3eImagem Indisponível%3c/text%3e%3c/svg%3e";
+        // --- COMPONENTE INTELIGENTE DE IMAGEM (CORRIGIDO) ---
+        const ImageWithFallback = ({ src, alt, className }) => {
+            const [error, setError] = useState(false);
+
+            // Reseta o estado de erro sempre que a URL (src) muda.
+            useEffect(() => {
+                setError(false);
+            }, [src]);
+
+            if (error) {
+                return (
+                    <div className={`${className} flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200`}>
+                        <div className="text-center p-2">
+                            <span className="block text-2xl mb-1">📷</span>
+                            <span className="text-xs font-bold uppercase">Imagem Indisponível</span>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <img 
+                    key={src} /* O segredo: 'key' força o React a recriar o elemento img quando o link muda */
+                    src={src} 
+                    alt={alt} 
+                    className={className}
+                    onError={() => setError(true)}
+                />
+            );
+        };
 
         // --- ICONS (Lucide React) ---
         const Icon = ({ children, size = 24, className = "" }) => (
@@ -224,11 +251,6 @@
         const openWhatsApp = (msg = "Olá Júlia! Visitei seu site e gostaria de agendar um horário.") => {
             const url = `https://wa.me/${CONFIGURACAO_SITE.contato.whatsappNumero}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
-        };
-
-        const handleImageError = (e) => {
-            e.target.src = FALLBACK_IMAGE;
-            e.target.onerror = null; 
         };
 
         const Navbar = () => {
@@ -298,10 +320,9 @@
         const Hero = () => (
             <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-purple-50">
                 <div className="absolute inset-0 z-0">
-                    <img 
+                    <ImageWithFallback 
                         src={CONFIGURACAO_SITE.imagens.capaHero} 
                         alt="Background" 
-                        onError={handleImageError}
                         className="w-full h-full object-cover opacity-60" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
@@ -590,11 +611,10 @@
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {images.map((img) => (
                                 <div key={img.id} className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative shadow-md hover:shadow-xl transition-all duration-300">
-                                    {/* Acessando img.url e img.alt corretamente agora */}
-                                    <img 
+                                    {/* USANDO O COMPONENTE INTELIGENTE AQUI */}
+                                    <ImageWithFallback 
                                         src={img.url} 
                                         alt={img.alt} 
-                                        onError={handleImageError}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                     />
                                     <div className="absolute inset-0 bg-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
@@ -620,10 +640,9 @@
                     <div className="flex flex-col md:flex-row items-center gap-12">
                         <div className="w-full md:w-1/2 relative">
                             <div className="absolute -top-4 -left-4 w-full h-full border-2 border-purple-200 rounded-2xl"></div>
-                            <img 
+                            <ImageWithFallback 
                                 src={CONFIGURACAO_SITE.imagens.fotoPerfil} 
                                 alt="Júlia França" 
-                                onError={handleImageError}
                                 className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover" 
                             />
                         </div>
