@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Júlia França - Body Piercer Profissional. Especialista em visagismo auricular, biossegurança e joias em titânio. Agende seu horário.">
+    <title>Júlia França - Body Piercer | Alta Performance e Biossegurança</title>
+    <!-- Favicon dinâmico (Emoji de Diamante) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Configurações Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Lato', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        gold: {
+                            100: '#F9F1D8',
+                            300: '#E8D48A',
+                            500: '#D4AF37',
+                            600: '#AA8C2C',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- React e Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Estilos específicos do SVG */
+        .anatomy-path {
+            transition: all 0.5s ease;
+        }
+        .piercing-point {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        .piercing-point:hover {
+            r: 10; /* Leve aumento no hover base */
+            opacity: 1;
+        }
+        /* Classe ativa gerenciada pelo React */
+        .piercing-point.active {
+            /* O estilo visual de "ativo" é controlado via props do React (fill/stroke), 
+               mas podemos adicionar animações extras aqui se desejado */
+        }
+
+        @keyframes pulse-ring {
+            0% { stroke-width: 0px; stroke-opacity: 0.5; }
+            50% { stroke-width: 10px; stroke-opacity: 0; }
+            100% { stroke-width: 0px; stroke-opacity: 0; }
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: white;
+            color: #581c87; /* purple-900 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const WHATSAPP_NUMBER = "5551994230750"; 
+        const WHATSAPP_DISPLAY = "(51) 99423-0750";
+
+        // --- ÍCONES (Lucide React simplificado) ---
+        const Icon = ({ children, size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {children}
+            </svg>
+        );
+        
+        const Icons = {
+            ShieldCheck: (p) => <Icon {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" /></Icon>,
+            Sparkles: (p) => <Icon {...p}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /><path d="M5 3v4" /><path d="M9 5H3" /><path d="M19 19v2" /><path d="M21 21h-2" /></Icon>,
+            MapPin: (p) => <Icon {...p}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></Icon>,
+            Instagram: (p) => <Icon {...p}><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></Icon>,
+            Phone: (p) => <Icon {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></Icon>,
+            Menu: (p) => <Icon {...p}><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></Icon>,
+            X: (p) => <Icon {...p}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></Icon>,
+            ChevronDown: (p) => <Icon {...p}><path d="m6 9 6 6 6-6" /></Icon>,
+            ChevronUp: (p) => <Icon {...p}><path d="m18 15-6-6-6 6" /></Icon>,
+            Star: (p) => <Icon {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></Icon>,
+            CheckCircle: (p) => <Icon {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></Icon>,
+            Clock: (p) => <Icon {...p}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></Icon>,
+            MessageCircle: (p) => <Icon {...p}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" /></Icon>,
+            Heart: (p) => <Icon {...p}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></Icon>
+        };
+        const { ShieldCheck, Sparkles, MapPin, Instagram, Phone, Menu, X, ChevronDown, ChevronUp, Star, CheckCircle, Clock, MessageCircle, Heart } = Icons;
+
+        // --- DADOS DO MAPA (AGRUPADOS POR REGIÃO) ---
+        const PIERCING_DATA = {
+            orelha: [
+                { id: 'lobulo', name: 'Lóbulo', color: '#9333ea', cx: 130, cy: 330, desc: 'O clássico. Região macia, cicatrização rápida (2-3 meses) e baixa dor.' },
+                { id: 'helix', name: 'Hélix', color: '#db2777', cx: 180, cy: 80, desc: 'A famosa "bordinha". Versátil para argolas e labrets. Cicatrização 6-12 meses.' },
+                { id: 'tragus', name: 'Tragus', color: '#0d9488', cx: 70, cy: 190, desc: 'Pequena cartilagem charmosa. Requer fones over-ear durante a cicatrização.' },
+                { id: 'conch', name: 'Conch', color: '#ca8a04', cx: 140, cy: 210, desc: 'Parte interna (concha). Fica lindo com ponto de luz ou argola cravejada.' },
+                { id: 'daith', name: 'Daith', color: '#7c3aed', cx: 100, cy: 165, desc: 'Dobra interna mais profunda. Estética sofisticada e muito popular.' },
+                { id: 'rook', name: 'Rook', color: '#be185d', cx: 130, cy: 110, desc: 'Perfuração vertical na dobra superior interna. Ótimo para joias curvas (bananas).' },
+                { id: 'flat', name: 'Flat', color: '#059669', cx: 160, cy: 50, desc: 'Área plana superior (Scapha). Perfeito para composições e joias maiores.' },
+                { id: 'antihelix', name: 'Anti-Hélix', color: '#2563eb', cx: 175, cy: 130, desc: 'Fica na dobra oposta à hélix. Discreto e elegante.' }
+            ],
+            face: [
+                { id: 'nostril', name: 'Nostril', color: '#db2777', cx: 185, cy: 220, desc: 'Aba nasal. Um dos mais populares e delicados. Joia: Nostril ou Argola.' },
+                { id: 'septum', name: 'Septo', color: '#7c3aed', cx: 150, cy: 235, desc: 'Perfuração na membrana do nariz. Estiloso e fácil de esconder.' },
+                { id: 'eyebrow', name: 'Sobrancelha', color: '#2563eb', cx: 220, cy: 110, desc: 'Clássico e marcante. Geralmente feito na cauda da sobrancelha.' },
+                { id: 'medusa', name: 'Medusa', color: '#ca8a04', cx: 150, cy: 260, desc: 'No philtrum (covinha) acima do lábio superior. Ideal para ponto de luz.' },
+                { id: 'labret', name: 'Labret', color: '#be185d', cx: 150, cy: 300, desc: 'Abaixo do lábio inferior. Versátil para argolas ou labrets.' },
+                { id: 'bridge', name: 'Bridge', color: '#0d9488', cx: 150, cy: 130, desc: 'Na ponte do nariz, entre os olhos. Estética alternativa e ousada.' }
+            ],
+            tronco: [
+                { id: 'navel', name: 'Umbigo', color: '#0d9488', cx: 150, cy: 300, desc: 'Umbigo clássico ou invertido. A joia favorita para o verão.' },
+                { id: 'nipple_l', name: 'Mamilo', color: '#db2777', cx: 100, cy: 160, desc: 'Perfuração no mamilo. Estética e sensibilidade. Cicatrização: 6-12 meses.' },
+                { id: 'nipple_r', name: 'Mamilo', color: '#db2777', cx: 200, cy: 160, desc: 'Perfuração no mamilo. Estética e sensibilidade. Cicatrização: 6-12 meses.' },
+                { id: 'microdermal', name: 'Microdermal', color: '#ca8a04', cx: 150, cy: 110, desc: 'Ponto de luz no colo (esterno). Joia de base subcutânea.' }
+            ]
+        };
+
+        // --- COMPONENTES ---
+
+        // Função de Contato WhatsApp
+        const openWhatsApp = (msg = "Olá Júlia! Visitei seu site e gostaria de agendar um horário.") => {
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        };
+
+        const Navbar = () => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const navLinks = [
+                { name: 'Início', href: '#home' },
+                { name: 'Diferenciais', href: '#diferenciais' },
+                { name: 'Mapa Anatômico', href: '#mapa' },
+                { name: 'Portfólio', href: '#galeria' },
+                { name: 'Sobre', href: '#sobre' },
+                { name: 'FAQ', href: '#faq' },
+            ];
+
+            return (
+                <nav className={`fixed w-full z-50 transition-all duration-500 border-b ${scrolled ? 'bg-white/95 backdrop-blur-md border-purple-100 py-3 shadow-md' : 'bg-transparent border-transparent py-6'}`}>
+                    <div className="container mx-auto px-6 flex justify-between items-center">
+                        <a href="#" className="flex flex-col items-start group z-50">
+                             <span className={`font-serif font-bold tracking-tight text-purple-900 transition-all duration-300 ${scrolled ? 'text-2xl' : 'text-3xl'}`}>
+                                Júlia França
+                             </span>
+                             <span className={`font-sans text-purple-500 uppercase tracking-[0.3em] transition-all duration-300 ${scrolled ? 'text-[10px]' : 'text-xs'} group-hover:tracking-[0.4em]`}>
+                                Body Piercer
+                             </span>
+                        </a>
+
+                        {/* Desktop Menu */}
+                        <div className="hidden lg:flex items-center space-x-8">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} className="text-sm font-medium text-gray-600 hover:text-purple-700 uppercase tracking-wider transition-colors relative group">
+                                    {link.name}
+                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-400 transition-all duration-300 group-hover:w-full"></span>
+                                </a>
+                            ))}
+                            <button onClick={() => openWhatsApp()} className="bg-purple-900 hover:bg-purple-800 text-white px-6 py-2 rounded-full font-bold text-sm transition-all transform hover:scale-105 shadow-lg shadow-purple-200">
+                                Agendar
+                            </button>
+                        </div>
+
+                        {/* Mobile Toggle */}
+                        <button className="lg:hidden text-purple-900" onClick={() => setIsOpen(!isOpen)}>
+                            {isOpen ? <X size={28} /> : <Menu size={28} />}
+                        </button>
+                    </div>
+
+                    {/* Mobile Menu */}
+                    {isOpen && (
+                        <div className="fixed inset-0 bg-white/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} onClick={() => setIsOpen(false)} className="text-2xl font-serif text-purple-900 hover:text-purple-600">
+                                    {link.name}
+                                </a>
+                            ))}
+                            <button onClick={() => {openWhatsApp(); setIsOpen(false);}} className="bg-purple-600 text-white px-8 py-3 rounded-full text-lg font-bold shadow-xl">
+                                Agendar Agora
+                            </button>
+                        </div>
+                    )}
+                </nav>
+            );
+        };
+
+        const Hero = () => (
+            <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-purple-50">
+                <div className="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1549490349-8669e7127b40?q=80&w=2070&auto=format&fit=crop" alt="Background" className="w-full h-full object-cover opacity-60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
+                </div>
+                
+                <div className="container mx-auto px-6 relative z-10 text-center mt-10">
+                    <div className="inline-block px-4 py-1 mb-6 border border-purple-300 rounded-full bg-white/50 backdrop-blur-sm animate-fade-in-up">
+                        <span className="text-purple-800 text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                            <Sparkles size={14} /> Biossegurança & Estética Avançada
+                        </span>
+                    </div>
+                    
+                    <h1 className="text-5xl md:text-7xl font-serif font-bold text-gray-900 mb-6 leading-tight animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+                        Arte que Valoriza <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 italic">Sua Anatomia</span>
+                    </h1>
+                    
+                    <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                        Especialista em perfurações seguras, visagismo auricular e joias de luxo em Titânio e Ouro. Transforme seu estilo com segurança e sofisticação.
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+                        <button onClick={() => openWhatsApp()} className="bg-purple-900 hover:bg-purple-800 text-white font-bold py-4 px-10 rounded-full transition-all hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <MessageCircle size={20} /> Agendar Horário
+                        </button>
+                        <a href="#galeria" className="bg-white hover:bg-gray-50 text-purple-900 border border-purple-200 font-bold py-4 px-10 rounded-full transition-all hover:shadow-lg hover:-translate-y-1">
+                            Ver Portfólio
+                        </a>
+                    </div>
+                </div>
+            </section>
+        );
+
+        const Features = () => {
+            const features = [
+                { icon: ShieldCheck, title: "Biossegurança Hospitalar", text: "Materiais 100% estéreis, descartáveis e com rastreabilidade. Autoclave validada para sua total segurança." },
+                { icon: Sparkles, title: "Joias de Alta Titularidade", text: "Trabalhamos exclusivamente com Titânio ASTM F-136 e Ouro 18k, livres de níquel e metais pesados." },
+                { icon: Star, title: "Visagismo Auricular", text: "Projetos personalizados (ear projects) desenhados para harmonizar com a anatomia única da sua orelha." },
+                { icon: Clock, title: "Suporte Pós-Perfuração", text: "Acompanhamento dedicado durante todo o processo de cicatrização para garantir o melhor resultado." }
+            ];
+
+            return (
+                <section id="diferenciais" className="py-24 bg-white relative">
+                    <div className="container mx-auto px-6">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {features.map((f, i) => (
+                                <div key={i} className="group p-8 rounded-2xl bg-purple-50/30 border border-purple-50 hover:border-purple-200 transition-all hover:-translate-y-2 hover:shadow-lg hover:bg-white">
+                                    <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-6 text-purple-700 group-hover:scale-110 transition-transform">
+                                        <f.icon size={28} />
+                                    </div>
+                                    <h3 className="text-xl font-serif font-bold text-gray-900 mb-3">{f.title}</h3>
+                                    <p className="text-gray-600 text-sm leading-relaxed">{f.text}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const AnatomyIllustration = ({ type, selected, onSelect }) => {
+            
+            // Definições comuns de SVG
+            const defs = (
+                <defs>
+                    <linearGradient id="skinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#f3e8ff" />
+                        <stop offset="100%" stopColor="#e9d5ff" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+            );
+
+            // Conteúdo do SVG baseado no tipo
+            let pathContent = null;
+            let currentPoints = PIERCING_DATA[type] || [];
+
+            if (type === 'orelha') {
+                pathContent = (
+                    <>
+                         <path d="M100 20 C160 20 200 60 210 120 C220 200 190 280 140 340 C110 370 70 380 50 350 C30 320 50 290 60 280 C60 280 60 240 60 200 C60 160 40 160 30 140 C20 120 50 120 60 120 C70 80 80 40 100 20 Z" fill="url(#skinGradient)" stroke="#7e22ce" strokeWidth="3" className="anatomy-path" />
+                         <path d="M100 40 C140 40 170 80 180 150 C185 200 170 240 140 240" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                         <path d="M120 100 C140 130 140 180 120 200" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                         <path d="M60 180 C50 190 50 210 60 220" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                         <path d="M90 150 C110 150 130 180 120 230" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                    </>
+                );
+            } else if (type === 'face') {
+                pathContent = (
+                    <>
+                        {/* Contorno Face */}
+                        <path d="M70 100 C70 150 70 250 150 350 C230 250 230 150 230 100" fill="url(#skinGradient)" stroke="#7e22ce" strokeWidth="3" className="anatomy-path"/>
+                        {/* Olhos (simples) */}
+                        <path d="M100 140 Q115 130 130 140" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.5"/>
+                        <path d="M170 140 Q185 130 200 140" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.5"/>
+                        {/* Nariz */}
+                        <path d="M150 180 Q140 220 150 230" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.6"/>
+                        <path d="M135 225 Q150 240 165 225" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.6"/>
+                        {/* Boca */}
+                        <path d="M120 280 Q150 290 180 280" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.6"/>
+                    </>
+                );
+            } else if (type === 'tronco') {
+                pathContent = (
+                    <>
+                        {/* Contorno Tronco (Pescoço, Ombros, Cintura) */}
+                        <path d="M110 40 Q110 70 60 90 Q50 200 70 300 L230 300 Q250 200 240 90 Q190 70 190 40" fill="url(#skinGradient)" stroke="#7e22ce" strokeWidth="3" className="anatomy-path"/>
+                        {/* Clavículas */}
+                        <path d="M110 90 Q130 100 150 95 Q170 100 190 90" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.4"/>
+                        {/* Linha central suave */}
+                        <path d="M150 110 L150 280" fill="none" stroke="#a855f7" strokeWidth="1" strokeDasharray="4" opacity="0.3"/>
+                    </>
+                );
+            }
+
+            return (
+                <div className="w-full h-full flex items-center justify-center animate-fade-in-up">
+                    <svg 
+                        viewBox="0 0 300 400" 
+                        className="w-full max-w-[350px] drop-shadow-2xl"
+                        style={{ filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.2))' }}
+                    >
+                        {defs}
+                        {pathContent}
+
+                        {/* Pontos de Perfuração */}
+                        {currentPoints.map((piercing) => {
+                            const isSelected = selected.id === piercing.id;
+                            return (
+                                <g key={piercing.id} onClick={() => onSelect(piercing)} className="cursor-pointer group">
+                                    <circle cx={piercing.cx} cy={piercing.cy} r="25" fill="transparent" />
+                                    {isSelected && (
+                                        <circle cx={piercing.cx} cy={piercing.cy} r="16" fill="none" stroke={piercing.color} strokeWidth="2" className="animate-ping opacity-75"/>
+                                    )}
+                                    <circle 
+                                        cx={piercing.cx} 
+                                        cy={piercing.cy} 
+                                        r={isSelected ? 10 : 7} 
+                                        fill={isSelected ? piercing.color : "white"}
+                                        stroke={piercing.color}
+                                        strokeWidth={isSelected ? 4 : 3}
+                                        className={`piercing-point transition-all duration-300 ${isSelected ? 'active filter drop-shadow-lg' : ''}`}
+                                    />
+                                    <text 
+                                        x={piercing.cx} 
+                                        y={piercing.cy - 20} 
+                                        textAnchor="middle" 
+                                        fill="#4c1d95" 
+                                        fontSize="12" 
+                                        fontWeight="bold"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                                        style={{ textShadow: '0 1px 2px white' }}
+                                    >
+                                        {piercing.name}
+                                    </text>
+                                </g>
+                            );
+                        })}
+                    </svg>
+                </div>
+            );
+        };
+
+        const InteractiveMap = () => {
+            const [activeTab, setActiveTab] = useState('orelha');
+            const [selected, setSelected] = useState(PIERCING_DATA['orelha'][0]);
+
+            const handleTabChange = (tab) => {
+                setActiveTab(tab);
+                setSelected(PIERCING_DATA[tab][0]);
+            };
+
+            return (
+                <section id="mapa" className="py-24 bg-purple-900 text-white relative overflow-hidden">
+                    {/* Elementos decorativos */}
+                    <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
+                        <div className="absolute -top-24 -left-24 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-400 rounded-full blur-3xl"></div>
+                    </div>
+
+                    <div className="container mx-auto px-6 relative z-10">
+                        <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+                            
+                            {/* Lado Esquerdo: Textos */}
+                            <div className="w-full md:w-5/12 animate-fade-in-up">
+                                <span className="text-pink-400 font-bold tracking-widest uppercase text-xs mb-2 block">Conhecimento Anatômico</span>
+                                <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Explore os Pontos</h2>
+                                
+                                {/* Tabs de Navegação */}
+                                <div className="flex gap-2 mb-8 bg-white/10 p-1 rounded-xl w-fit">
+                                    {['orelha', 'face', 'tronco'].map((tab) => (
+                                        <button 
+                                            key={tab}
+                                            onClick={() => handleTabChange(tab)}
+                                            className={`px-6 py-2 rounded-lg font-bold text-sm capitalize transition-all duration-300 ${activeTab === tab ? 'bg-white text-purple-900 shadow-lg' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <p className="text-purple-200 text-lg mb-8 font-light leading-relaxed">
+                                    Selecione um ponto no diagrama para ver os detalhes da perfuração, tempo de cicatrização e cuidados.
+                                </p>
+
+                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 transition-all duration-500 hover:bg-white/15 shadow-2xl">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-3xl font-serif font-bold text-white">{selected.name}</h3>
+                                        <div className="w-4 h-4 rounded-full shadow-[0_0_10px_currentColor]" style={{ backgroundColor: selected.color, color: selected.color }}></div>
+                                    </div>
+                                    <p className="text-gray-100 mb-6 text-lg leading-relaxed border-t border-white/10 pt-4">{selected.desc}</p>
+                                    
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                        <div className="bg-black/20 rounded-lg p-3">
+                                            <div className="text-xs uppercase tracking-wider text-gray-400 mb-1">Dor Estimada</div>
+                                            <div className="flex gap-1">
+                                                {[1,2,3].map(i => <div key={i} className={`h-2 w-full rounded-full ${i <= (['Daith','Septo','Mamilo'].includes(selected.name) ? 3 : 2) ? 'bg-pink-500' : 'bg-gray-600'}`}></div>)}
+                                            </div>
+                                        </div>
+                                        <div className="bg-black/20 rounded-lg p-3">
+                                            <div className="text-xs uppercase tracking-wider text-gray-400 mb-1">Cicatrização</div>
+                                            <div className="text-white font-bold text-sm">{['Mamilo', 'Helix', 'Navel'].includes(selected.name) || selected.id.includes('helix') ? '6-12 Meses' : '2-4 Meses'}</div>
+                                        </div>
+                                    </div>
+
+                                    <button onClick={() => openWhatsApp(`Olá! Gostaria de fazer um piercing no ${selected.name} (${activeTab}).`)} className="w-full py-4 bg-white text-purple-900 font-bold rounded-xl hover:bg-purple-100 transition-all transform hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2">
+                                        <MessageCircle size={20} /> Orçar este Furo
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Lado Direito: Mapa SVG Dinâmico */}
+                            <div className="w-full md:w-7/12 flex justify-center">
+                                <AnatomyIllustration type={activeTab} selected={selected} onSelect={setSelected} />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const ServicesList = () => {
+            const services = [
+                "Lóbulo (Primeiro, Segundo, Terceiro furo)",
+                "Cartilagens (Hélix, Flat, Conch, Tragus)",
+                "Perfurações Avançadas (Daith, Rook, Industrial)",
+                "Piercings Faciais (Nostril, Septo, Sobrancelha)",
+                "Piercings Corporais (Umbigo, Mamilo)",
+                "Atualização de Joias e Downsize"
+            ];
+
+            return (
+                <section className="py-20 bg-white">
+                    <div className="container mx-auto px-6">
+                        <div className="max-w-4xl mx-auto bg-purple-50 rounded-3xl p-8 md:p-12 border border-purple-100 text-center">
+                            <h2 className="text-3xl font-serif font-bold text-purple-900 mb-8">Nossos Procedimentos</h2>
+                            <div className="grid md:grid-cols-2 gap-4 text-left">
+                                {services.map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm border border-purple-50">
+                                        <div className="text-green-500"><CheckCircle size={20} /></div>
+                                        <span className="text-gray-700 font-medium">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-10">
+                                <p className="text-gray-500 text-sm mb-4">Trabalhamos apenas com agendamento prévio para garantir a esterilização exclusiva para você.</p>
+                                <button onClick={() => openWhatsApp()} className="inline-flex items-center justify-center gap-2 text-purple-700 font-bold hover:text-purple-900 transition-colors border-b-2 border-purple-200 hover:border-purple-600 pb-1">
+                                    Consultar valores e disponibilidade <span aria-hidden="true">→</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Gallery = () => {
+            const images = [
+                "image_388707.jpg",
+                "image_381a49.png",
+                "https://pin.it/4m7OHW5Ez",
+                "https://images.unsplash.com/photo-1632208003666-419a4e3dfd0e?q=80&w=600&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1605218427360-36390f854a86?q=80&w=600&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1596704017254-9b121068fb31?q=80&w=600&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1629230537482-628d6174d812?q=80&w=600&auto=format&fit=crop",
+            ];
+
+            return (
+                <section id="galeria" className="py-24 bg-white relative">
+                    <div className="container mx-auto px-6">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Portfólio</h2>
+                            <div className="w-20 h-1 bg-gradient-to-r from-purple-400 to-pink-300 mx-auto rounded-full"></div>
+                            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">Confira alguns dos nossos procedimentos realizados com técnica e segurança.</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {images.map((img, i) => (
+                                <div key={i} className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative shadow-md hover:shadow-xl transition-all duration-300">
+                                    <img src={img} alt="Portfolio" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                    <div className="absolute inset-0 bg-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="text-center mt-12">
+                             <a href="https://instagram.com" target="_blank" className="bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold py-3 px-8 rounded-full transition-colors inline-flex items-center gap-2">
+                                <Instagram size={20} /> Siga-nos no Instagram
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const About = () => (
+            <section id="sobre" className="py-24 bg-purple-50 overflow-hidden">
+                <div className="container mx-auto px-6">
+                    <div className="flex flex-col md:flex-row items-center gap-12">
+                        <div className="w-full md:w-1/2 relative">
+                            <div className="absolute -top-4 -left-4 w-full h-full border-2 border-purple-200 rounded-2xl"></div>
+                            <img src="https://images.unsplash.com/photo-1595166687000-dc893708687a?q=80&w=1000&auto=format&fit=crop" alt="Júlia França" className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover" />
+                        </div>
+                        <div className="w-full md:w-1/2">
+                            <span className="text-purple-600 font-bold uppercase tracking-widest text-sm mb-2 block">Sobre a Profissional</span>
+                            <h2 className="text-4xl font-serif font-bold text-gray-900 mb-6">Júlia França</h2>
+                            <p className="text-gray-600 leading-relaxed text-lg font-light mb-6">
+                                Minha missão é elevar sua autoestima através da arte corporal, sempre priorizando sua saúde. 
+                                Com certificações em biossegurança e técnicas assépticas, ofereço um ambiente livre de contaminação cruzada.
+                            </p>
+                            <p className="text-gray-600 leading-relaxed text-lg font-light mb-8">
+                                Utilizo a técnica <strong className="text-purple-800 font-medium">Freehand</strong> (mão livre) para perfurações mais precisas e menos traumáticas, garantindo uma cicatrização superior e resultados esteticamente perfeitos.
+                            </p>
+                            
+                            <div className="grid grid-cols-2 gap-6 mb-8">
+                                <div>
+                                    <h4 className="font-bold text-purple-900 text-2xl">5+</h4>
+                                    <p className="text-sm text-gray-500 uppercase tracking-wide">Anos de Experiência</p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-purple-900 text-2xl">2k+</h4>
+                                    <p className="text-sm text-gray-500 uppercase tracking-wide">Furos Realizados</p>
+                                </div>
+                            </div>
+
+                            <button onClick={() => openWhatsApp("Oi Júlia, gostaria de conhecer seu estúdio!")} className="bg-purple-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-purple-800 transition-colors">
+                                Fale Comigo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+
+        const FAQ = () => {
+            const [open, setOpen] = useState(0);
+            const items = [
+                { q: "Qual o material das joias?", a: "Utilizo exclusivamente Titânio Grau Implante (ASTM F-136) e Ouro 18k. São materiais biocompatíveis, que não causam alergias e garantem a melhor cicatrização." },
+                { q: "Dói muito furar?", a: "A dor é muito relativa e dura segundos. Utilizo agulhas americanas (cateter não!) que são extremamente afiadas, tornando o procedimento rápido e com desconforto mínimo." },
+                { q: "Posso levar minha própria joia?", a: "Por questões de biossegurança, utilizo apenas as joias do estúdio, que passam por processo rigoroso de esterilização em autoclave antes do uso." },
+                { q: "Como agendar?", a: "O agendamento é feito exclusivamente via WhatsApp. Basta clicar nos botões do site, enviar uma mensagem e verificaremos a disponibilidade de horário." }
+            ];
+
+            return (
+                <section id="faq" className="py-24 bg-white">
+                    <div className="container mx-auto px-6 max-w-3xl">
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 text-center mb-12">Perguntas Frequentes</h2>
+                        <div className="space-y-4">
+                            {items.map((item, i) => (
+                                <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <button className="w-full flex justify-between items-center p-5 text-left bg-white hover:bg-gray-50" onClick={() => setOpen(open === i ? null : i)}>
+                                        <span className="font-bold text-gray-800">{item.q}</span>
+                                        {open === i ? <ChevronUp className="text-purple-600" /> : <ChevronDown className="text-gray-400" />}
+                                    </button>
+                                    <div className={`transition-all duration-300 ${open === i ? 'max-h-48 opacity-100 p-5 pt-0' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                                        <p className="text-gray-600 leading-relaxed">{item.a}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Footer = () => (
+            <footer className="bg-gray-900 text-white py-16 border-t border-gray-800">
+                <div className="container mx-auto px-6">
+                    <div className="grid md:grid-cols-3 gap-12 mb-12">
+                        <div>
+                            <h3 className="font-serif text-2xl font-bold mb-4">Júlia França</h3>
+                            <p className="text-gray-400 leading-relaxed text-sm">
+                                Body Piercing com segurança, técnica e estética. <br/>
+                                Transformando seu corpo com responsabilidade.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="font-bold mb-4 text-purple-400 uppercase tracking-wider text-sm">Contato</h4>
+                            <ul className="space-y-3 text-gray-300 text-sm">
+                                <li className="flex items-center gap-2">
+                                    <a href="https://wa.me/message/EJMD4ACD3Z2HG1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-purple-400 transition-colors">
+                                        <Phone size={16} /> {WHATSAPP_DISPLAY}
+                                    </a>
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <a href="https://maps.app.goo.gl/g6NPH6ZvYFZxtVLm6" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-purple-400 transition-colors text-left">
+                                        <MapPin size={16} className="flex-shrink-0" /> 
+                                        <span>Rua Jayme Cyrino Machado de Oliveira 35, loja 31 - Porto Alegre, RS</span>
+                                    </a>
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <a href="https://www.instagram.com/julia.piercer_?igsh=ODNtdWp2c3ZsYXl1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-purple-400 transition-colors">
+                                        <Instagram size={16} /> @julia.piercer_
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold mb-4 text-purple-400 uppercase tracking-wider text-sm">Atendimento</h4>
+                            <p className="text-gray-300 text-sm mb-2">Segunda a Sexta: 10h às 19h</p>
+                            <p className="text-gray-300 text-sm">Sábado: 10h às 16h</p>
+                        </div>
+                    </div>
+                    <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-xs">
+                        &copy; {new Date().getFullYear()} Júlia França Body Piercer. Todos os direitos reservados.
+                    </div>
+                </div>
+            </footer>
+        );
+
+        const FloatingWhatsApp = () => (
+            <button 
+                onClick={() => openWhatsApp()}
+                className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center animate-pulse-slow"
+                aria-label="Falar no WhatsApp"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/></svg>
+            </button>
+        );
+
+        const App = () => {
+            return (
+                <div className="font-sans text-gray-900 bg-white selection:bg-purple-200 selection:text-purple-900">
+                    <Navbar />
+                    <Hero />
+                    <Features />
+                    <InteractiveMap />
+                    <ServicesList />
+                    <Gallery />
+                    <About />
+                    <FAQ />
+                    <Footer />
+                    <FloatingWhatsApp />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
