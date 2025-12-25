@@ -224,14 +224,16 @@
         // --- MAP DATA ---
         const PIERCING_DATA = {
             orelha: [
-                { id: 'lobulo', name: 'Lóbulo', color: '#9333ea', cx: 130, cy: 330, desc: 'O clássico. Região macia, cicatrização rápida (2-3 meses) e baixa dor.' },
-                { id: 'helix', name: 'Hélix', color: '#db2777', cx: 180, cy: 80, desc: 'A famosa "bordinha". Versátil para argolas e labrets. Cicatrização 6-12 meses.' },
-                { id: 'tragus', name: 'Tragus', color: '#0d9488', cx: 70, cy: 190, desc: 'Pequena cartilagem charmosa. Requer fones over-ear durante a cicatrização.' },
-                { id: 'conch', name: 'Conch', color: '#ca8a04', cx: 140, cy: 210, desc: 'Parte interna (concha). Fica lindo com ponto de luz ou argola cravejada.' },
-                { id: 'daith', name: 'Daith', color: '#7c3aed', cx: 100, cy: 165, desc: 'Dobra interna mais profunda. Estética sofisticada e muito popular.' },
-                { id: 'rook', name: 'Rook', color: '#be185d', cx: 130, cy: 110, desc: 'Perfuração vertical na dobra superior interna. Ótimo para joias curvas (bananas).' },
-                { id: 'flat', name: 'Flat', color: '#059669', cx: 160, cy: 50, desc: 'Área plana superior (Scapha). Perfeito para composições e joias maiores.' },
-                { id: 'antihelix', name: 'Anti-Hélix', color: '#2563eb', cx: 175, cy: 130, desc: 'Fica na dobra oposta à hélix. Discreto e elegante.' }
+                // Coordenadas ajustadas para o novo desenho anatômico profissional
+                { id: 'lobulo', name: 'Lóbulo', color: '#9333ea', cx: 145, cy: 320, desc: 'O clássico. Região macia, cicatrização rápida (2-3 meses) e baixa dor.' },
+                { id: 'helix', name: 'Hélix', color: '#db2777', cx: 210, cy: 85, desc: 'A famosa "bordinha". Versátil para argolas e labrets. Cicatrização 6-12 meses.' },
+                { id: 'tragus', name: 'Tragus', color: '#0d9488', cx: 85, cy: 195, desc: 'Pequena cartilagem charmosa. Requer fones over-ear durante a cicatrização.' },
+                { id: 'conch', name: 'Conch', color: '#ca8a04', cx: 155, cy: 210, desc: 'Parte interna (concha). Fica lindo com ponto de luz ou argola cravejada.' },
+                { id: 'daith', name: 'Daith', color: '#7c3aed', cx: 110, cy: 175, desc: 'Dobra interna mais profunda. Estética sofisticada e muito popular.' },
+                { id: 'rook', name: 'Rook', color: '#be185d', cx: 135, cy: 120, desc: 'Perfuração vertical na dobra superior interna. Ótimo para joias curvas (bananas).' },
+                { id: 'flat', name: 'Flat', color: '#059669', cx: 148, cy: 85, desc: 'Área plana superior (Scapha). Perfeito para composições e joias maiores.' },
+                // 👇 Posição do Anti-Hélix ajustada: à esquerda, entre o Rook e o Flat
+                { id: 'antihelix', name: 'Anti-Hélix', color: '#2563eb', cx: 125, cy: 95, desc: 'Fica na dobra oposta à hélix (Forward Helix). Discreto e elegante.' }
             ],
             face: [
                 { id: 'nostril', name: 'Nostril', color: '#db2777', cx: 185, cy: 220, desc: 'Aba nasal. Um dos mais populares e delicados. Joia: Nostril ou Argola.' },
@@ -410,11 +412,68 @@
             if (type === 'orelha') {
                 pathContent = (
                     <>
-                         <path d="M100 20 C160 20 200 60 210 120 C220 200 190 280 140 340 C110 370 70 380 50 350 C30 320 50 290 60 280 C60 280 60 240 60 200 C60 160 40 160 30 140 C20 120 50 120 60 120 C70 80 80 40 100 20 Z" fill="url(#skinGradient)" stroke="#7e22ce" strokeWidth="3" className="anatomy-path" />
-                         <path d="M100 40 C140 40 170 80 180 150 C185 200 170 240 140 240" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-                         <path d="M120 100 C140 130 140 180 120 200" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-                         <path d="M60 180 C50 190 50 210 60 220" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-                         <path d="M90 150 C110 150 130 180 120 230" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                        {/* Contorno Principal da Orelha (Mais orgânico e anatômico) */}
+                        <path 
+                            d="M120 40 
+                               C 170 30, 230 50, 240 120 
+                               C 250 190, 240 250, 200 320 
+                               C 180 355, 140 370, 110 350 
+                               C 90 335, 95 310, 100 290 
+                               C 100 290, 75 250, 75 200 
+                               C 75 160, 90 150, 100 145
+                               C 100 100, 90 60, 120 40 Z" 
+                            fill="url(#skinGradient)" 
+                            stroke="#7e22ce" 
+                            strokeWidth="2.5" 
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="anatomy-path" 
+                        />
+                        
+                        {/* Detalhe: Hélix Interno e Anti-Hélix (Y shape) */}
+                        <path 
+                            d="M125 70 
+                               C 160 60, 190 90, 195 150 
+                               C 200 210, 180 260, 150 280" 
+                            fill="none" 
+                            stroke="#a855f7" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            opacity="0.6"
+                        />
+                         {/* Detalhe: Perna superior do Anti-Hélix */}
+                         <path 
+                            d="M150 100 
+                               C 160 80, 190 80, 200 100" 
+                            fill="none" 
+                            stroke="#a855f7" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            opacity="0.4"
+                        />
+
+                        {/* Detalhe: Concha (Conch) */}
+                        <path 
+                            d="M120 160 
+                               C 140 160, 165 180, 160 230 
+                               C 155 260, 130 260, 120 250" 
+                            fill="none" 
+                            stroke="#a855f7" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            opacity="0.6"
+                        />
+
+                        {/* Detalhe: Tragus */}
+                        <path 
+                            d="M95 180 
+                               C 80 185, 80 210, 95 215" 
+                            fill="none" 
+                            stroke="#a855f7" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            opacity="0.6"
+                        />
                     </>
                 );
             } else if (type === 'face') {
