@@ -83,13 +83,8 @@
         
         /* Lightbox Backdrop Blur */
         .lightbox-backdrop {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        
-        /* Brutalist-light Utility */
-        .brutal-border {
-            border: 1px solid rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
     </style>
 </head>
@@ -114,18 +109,68 @@
             },
             imagens: {
                 capaHero: "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?q=80&w=2000&auto=format&fit=crop",
-                fotoPerfil: "https://images.unsplash.com/photo-1595166687000-dc893708687a?q=80&w=1000&auto=format&fit=crop",
+                fotoPerfil: "https://i.pinimg.com/736x/1c/be/ec/1cbeecb6dcb43b4475a3f5936eb606da.jpg",
                 
-                // PORTFOLIO DATA STRUCTURE
+                // RESTAURANDO DADOS DO PORTFÓLIO PARA CORRIGIR O ERRO
                 portfolio: [
-                    { id: 1, category: "Orelha", title: "Helix Duplo", src: "https://images.unsplash.com/photo-1629230537482-628d6174d812?q=80&w=800&auto=format&fit=crop", alt: "Perfuração dupla no Helix" },
-                    { id: 2, category: "Face", title: "Septo Clicker", src: "https://images.unsplash.com/photo-1596704017254-9b121068fb31?q=80&w=800&auto=format&fit=crop", alt: "Joia clicker no septo" },
-                    { id: 3, category: "Orelha", title: "Composição Gold", src: "https://images.unsplash.com/photo-1605218427360-36390f854a86?q=80&w=800&auto=format&fit=crop", alt: "Projeto auricular em ouro" },
-                    { id: 4, category: "Orelha", title: "Industrial", src: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=800&auto=format&fit=crop", alt: "Piercing transversal industrial" },
-                    { id: 5, category: "Face", title: "Nostril", src: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=800&auto=format&fit=crop", alt: "Ponto de luz no nariz" },
-                    { id: 6, category: "Face", title: "Sobrancelha", src: "https://images.unsplash.com/photo-1574926054530-540288c8e678?q=80&w=800&auto=format&fit=crop", alt: "Piercing na sobrancelha" },
-                    { id: 7, category: "Corporal", title: "Navel", src: "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?q=80&w=800&auto=format&fit=crop", alt: "Piercing de umbigo com zircônia" },
-                    { id: 8, category: "Orelha", title: "Daith Heart", src: "https://images.unsplash.com/photo-1615752319087-87431e5f8845?q=80&w=800&auto=format&fit=crop", alt: "Coração no Daith" }
+                    { 
+                        id: 1, 
+                        category: 'Orelha',
+                        url: "https://i.pinimg.com/736x/86/15/9c/86159cd3b9b2d03fb0db359074b93e65.jpg", 
+                        title: "Helix Duplo",
+                        alt: "Perfuração dupla no Helix" 
+                    },
+                    { 
+                        id: 2, 
+                        category: 'Face',
+                        url: "https://i.pinimg.com/736x/9f/37/4b/9f374b9d288b42617df9b28a1516fa48.jpg", 
+                        title: "Septo Clicker",
+                        alt: "Joia clicker no septo" 
+                    },
+                    { 
+                        id: 3, 
+                        category: 'Orelha',
+                        url: "https://i.pinimg.com/736x/0e/0f/22/0e0f228bb2e929b7bb1ad3de04ed64f7.jpg", 
+                        title: "Composição Gold",
+                        alt: "Composição de brincos" 
+                    },
+                    { 
+                        id: 4, 
+                        category: 'Orelha',
+                        url: "https://i.pinimg.com/736x/b9/8e/ea/b98eea71ee330fb217c8c535c911e8ba.jpg", 
+                        title: "Industrial Transversal",
+                        alt: "Piercing industrial" 
+                    },
+                    { 
+                        id: 5, 
+                        category: 'Face',
+                        url: "https://i.pinimg.com/736x/26/b2/c8/26b2c8610850eb2803790eac9551c373.jpg", 
+                        title: "Nostril Ponto de Luz",
+                        alt: "Nostril" 
+                    },
+                    { 
+                        id: 6, 
+                        category: 'Face',
+                        url: "https://i.pinimg.com/736x/83/bf/ff/83bfffff37a797bc775975a3c66504ce.jpg", 
+                        title: "Sobrancelha Masculina",
+                        alt: "Sobrancelha" 
+                    },
+                    { 
+                        id: 8, 
+                        category: 'Orelha', 
+                        // 👇👇👇 FOTO ATUALIZADA AQUI 👇👇👇
+                        url: "https://i.pinimg.com/736x/63/5f/3d/635f3dc87d738f9d615c325d66a6d1c1.jpg", 
+                        title: "Joia em Titânio",
+                        alt: "Minha Foto Preferida" 
+                    },
+                    { 
+                        id: 10, 
+                        category: 'Face',
+                        // 👇👇👇 FOTO ATUALIZADA AQUI 👇👇👇
+                        url: "https://i.pinimg.com/736x/47/6a/25/476a2546e012c1d22cd7cbc0aab03f3f.jpg", 
+                        title: "Labret Ponto de Luz",
+                        alt: "Piercing labret no lábio" 
+                    }
                 ]
             }
         };
@@ -136,9 +181,8 @@
 
         // FUNÇÃO DE PROTEÇÃO PARA IMAGENS QUEBRADAS
         const handleImageError = (e) => {
-            e.target.onerror = null; 
-            // Substitui por um placeholder roxo elegante se der erro
-            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f3e8ff'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='30' fill='%236b21a8' text-anchor='middle' dy='.3em'%3EFoto Indisponível%3C/text%3E%3C/svg%3E";
+            // Código deixado vazio intencionalmente para não mostrar placeholder
+            // e.target.style.display = 'none'; // Descomente se quiser esconder a imagem quebrada
         };
 
         // --- ICONS (Lucide React) ---
@@ -546,11 +590,14 @@
             const [activeFilter, setActiveFilter] = useState("Todos");
             const [selectedImage, setSelectedImage] = useState(null);
             
-            const categories = ["Todos", ...new Set(CONFIGURACAO_SITE.imagens.portfolio.map(item => item.category))];
+            // Safe guard against undefined portfolio
+            const portfolioData = CONFIGURACAO_SITE.imagens.portfolio || [];
+            
+            const categories = ["Todos", ...new Set(portfolioData.map(item => item.category))];
             
             const filteredItems = activeFilter === "Todos" 
-                ? CONFIGURACAO_SITE.imagens.portfolio 
-                : CONFIGURACAO_SITE.imagens.portfolio.filter(item => item.category === activeFilter);
+                ? portfolioData 
+                : portfolioData.filter(item => item.category === activeFilter);
 
             return (
                 <section id="portfolio" className="py-24 bg-white relative">
@@ -588,10 +635,11 @@
                                     className="group relative aspect-square cursor-pointer overflow-hidden bg-gray-100 brutal-border"
                                     onClick={() => setSelectedImage(item)}
                                 >
+                                    {/* CORREÇÃO AQUI: item.src -> item.url */}
                                     <img 
-                                        src={item.src} 
+                                        src={item.url} 
                                         alt={item.alt} 
-                                        onError={handleImageError}
+                                        
                                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         loading="lazy"
                                     />
@@ -622,10 +670,11 @@
                                 </button>
                                 
                                 <div className="w-full md:w-2/3 bg-black flex items-center justify-center">
+                                    {/* CORREÇÃO AQUI TAMBÉM: item.src -> item.url */}
                                     <img 
-                                        src={selectedImage.src} 
+                                        src={selectedImage.url} 
                                         alt={selectedImage.alt} 
-                                        onError={handleImageError}
+                                        
                                         className="max-h-[50vh] md:max-h-[90vh] w-auto max-w-full object-contain"
                                     />
                                 </div>
